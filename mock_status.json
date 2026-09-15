@@ -1,0 +1,66 @@
+{
+  "GYAN-2026-1001": {
+    "child_name": "Aarav Kumar",
+    "application_id": "GYAN-2026-1001",
+    "current_status": "Registered",
+    "status_change_date": "2026-01-10",
+    "allotted_school": "NA",
+    "remark": "NA"
+  },
+  "GYAN-2026-1002": {
+    "child_name": "Priya Kumari",
+    "application_id": "GYAN-2026-1002",
+    "current_status": "Under verification",
+    "status_change_date": "2026-01-18",
+    "allotted_school": "NA",
+    "remark": "Documents under review"
+  },
+  "GYAN-2026-1003": {
+    "child_name": "Rohit Sharma",
+    "application_id": "GYAN-2026-1003",
+    "current_status": "Verified — awaiting allotment",
+    "status_change_date": "2026-01-25",
+    "allotted_school": "NA",
+    "remark": "Eligible for lottery / school allotment"
+  },
+  "GYAN-2026-1004": {
+    "child_name": "Ananya Singh",
+    "application_id": "GYAN-2026-1004",
+    "current_status": "School allotted",
+    "status_change_date": "2026-02-05",
+    "allotted_school": "St. Xavier's Public School, Patna",
+    "remark": "Complete enrollment at allotted school with required documents"
+  },
+  "GYAN-2026-1005": {
+    "child_name": "Kabir Yadav",
+    "application_id": "GYAN-2026-1005",
+    "current_status": "Enrolled",
+    "status_change_date": "2026-02-12",
+    "allotted_school": "DAV Public School, Muzaffarpur",
+    "remark": "Admission / enrollment completed"
+  },
+  "GYAN-2026-1006": {
+    "child_name": "Sneha Devi",
+    "application_id": "GYAN-2026-1006",
+    "current_status": "Objection / documents pending",
+    "status_change_date": "2026-01-22",
+    "allotted_school": "NA",
+    "remark": "Income certificate unclear — re-upload on Gyandeep Portal"
+  },
+  "GYAN-2026-1007": {
+    "child_name": "Vikram Paswan",
+    "application_id": "GYAN-2026-1007",
+    "current_status": "Not allotted in lottery",
+    "status_change_date": "2026-02-05",
+    "allotted_school": "NA",
+    "remark": "No seat allotted in this round — check portal for further instructions"
+  },
+  "GYAN-2026-1008": {
+    "child_name": "Meera Kumari",
+    "application_id": "GYAN-2026-1008",
+    "current_status": "Rejected",
+    "status_change_date": "2026-01-28",
+    "allotted_school": "NA",
+    "remark": "Eligibility criteria not met as per verification"
+  }
+}
