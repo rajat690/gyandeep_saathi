@@ -1,0 +1,239 @@
+BIHAR GYANDEEP / RTE 12(1)(c) ADMISSION – KNOWLEDGE BASE
+(Gyandeep Saathi WhatsApp bot — demo knowledge pack)
+
+Portal: https://gyandeep-rte.bihar.gov.in/
+Nodal body: Bihar Education Department (Directorate of Primary Education)
+Help email (from official flyer): rtebiharhelp@gmail.com
+
+Disclaimer: This knowledge base is for citizen guidance. Rules, income limits, dates and circulars can change. Always re-verify on the Gyandeep Portal and latest department notifications before acting.
+
+─────────────────────────────────────────────
+WHAT IS RTE 12(1)(c) / GYANDEEP
+─────────────────────────────────────────────
+
+Section 12(1)(c) of the Right of Children to Free and Compulsory Education (RTE) Act, 2009 requires private unaided non-minority schools to reserve at least 25% of seats at the entry level for children belonging to:
+- Economically Weaker Sections (EWS)
+- Disadvantaged Groups (as notified by the State — e.g. SC/ST and other notified categories)
+
+Admission under this quota is free of cost to the child up to Class 8.
+The government reimburses private schools per-child as per rules (generally the lower of the school's fee or the state's per-child expenditure in government schools).
+
+Minority-run unaided schools are exempt (as per the legal position noted in the product brief / Supreme Court judgment on Article 30(1)).
+
+In Bihar, online registration and admission under this provision are done through the Gyandeep Portal.
+
+─────────────────────────────────────────────
+ELIGIBILITY
+─────────────────────────────────────────────
+
+A child can typically be considered if:
+- The admission is for the notified entry class (primarily Class 1 under Bihar's current Gyandeep implementation framework).
+- The child belongs to a Disadvantaged Group OR Economically Weaker Section as defined by Bihar notifications.
+- Parent/legal guardian completes online registration and application on Gyandeep with required verification.
+
+Disadvantaged Group (as described in department flyer language):
+- Includes notified categories such as Scheduled Caste, Scheduled Tribe, Backward Class, Extremely Backward Class (including transgender as notified), and minority groups where parent/legal guardian annual income is within the state-notified limit for that group.
+- Exact income ceilings must be read from the latest official flyer/circular on Gyandeep.
+
+Economically Weaker Section (EWS):
+- Children of all castes/communities whose parent/legal guardian annual income is below the state-notified weaker-section income limit.
+- Confirm the latest rupee threshold on the portal/flyer before quoting a number in production.
+
+Orphan children:
+- Means children whose parents are not alive.
+- Special document rules apply (see DOCUMENTS REQUIRED).
+- Caste certificate is not mandatory for orphans (as per flyer notes).
+- Income certificate is not applicable to orphans (as per flyer notes).
+- Parent Aadhaar is not required in orphan cases as noted on the flyer; guardian/institution head undertaking is used.
+
+Age:
+- Child must meet the age criteria notified for entry (as printed on the current Gyandeep admission notice). Always confirm the exact birth-date window on the latest circular.
+
+─────────────────────────────────────────────
+WHO IS NOT COVERED / COMMON LIMITS
+─────────────────────────────────────────────
+
+- Minority unaided schools are exempt from the 25% 12(1)(c) reservation.
+- Process described here is for Gyandeep RTE private-school entry admissions — not a general scholarship DBT scheme.
+- Paper applications are not the channel for Gyandeep online admission; use the portal.
+- Quoting outdated income limits or deadlines without checking the portal is not allowed for the bot.
+
+─────────────────────────────────────────────
+APPLICATION PROCESS
+─────────────────────────────────────────────
+
+Applications are submitted online through:
+- Gyandeep Portal: https://gyandeep-rte.bihar.gov.in/
+
+High-level steps (from department flyer):
+1. Do preliminary registration of the child on Gyandeep using the parent/guardian mobile number.
+2. At application time, parent/guardian Aadhaar verification is mandatory; child's Aadhaar verification is optional.
+3. After registration, User ID is sent by SMS to the registered mobile number.
+4. Login with the User ID and complete the online admission form on Gyandeep.
+5. Track verification, school allotment and enrollment status on the portal.
+
+Overall pipeline:
+- Student registration
+- Verification of registered students
+- Online school allotment (lottery-based)
+- Enrollment of selected students in the allotted school
+
+Private schools with recognition also update Intake Capacity on the portal as per the notified schedule.
+
+Current student registration last date (from flyer used for this demo pack): 31 January 2026.
+Check Gyandeep regularly for extensions or changes.
+
+─────────────────────────────────────────────
+DOCUMENTS REQUIRED
+─────────────────────────────────────────────
+
+Parents/guardians may need (as per flyer checklist):
+- Birth proof: Birth certificate / hospital or nurse record / Anganwadi record / age declaration by parent or guardian
+- Caste certificate (not mandatory for orphan children)
+- Income certificate (not applicable to orphan children)
+- Domicile Certificate OR alternatives such as Aadhaar / Voter ID / Driving Licence / Rent agreement / Electricity bill
+  - For orphans, domicile rules differ as per flyer; if domicile is not available, parent/guardian must upload domicile via school within three months of admission where required
+- Transgender-related certificate where applicable
+- For orphans: Undertaking certificate by guardian / head of institution
+- Parent/guardian Aadhaar (child Aadhaar after admission — see AADHAAR REQUIREMENTS)
+- Parent/guardian mobile number
+- Child's recent colour passport-size photo (about 50 KB as noted on flyer)
+
+Always prefer the latest checklist on Gyandeep if it differs from this pack.
+
+─────────────────────────────────────────────
+AADHAAR REQUIREMENTS
+─────────────────────────────────────────────
+
+- Parent/guardian Aadhaar verification is mandatory while applying.
+- Child's Aadhaar is NOT mandatory at the time of application.
+- After the child is admitted to school, parent/guardian must submit the child's Aadhaar to the school within three months.
+- The headmaster uploads / causes upload of the child's Aadhaar on the Gyandeep Portal.
+- For orphan cases, parent Aadhaar is not required as noted on the flyer; follow orphan document rules instead.
+
+─────────────────────────────────────────────
+SCHOOL ALLOTMENT AND ENROLLMENT
+─────────────────────────────────────────────
+
+- After verification, eligible students are considered for online school allotment.
+- Allotment is lottery-based (as per Bihar Gyandeep process description).
+- Selected students must complete enrollment/admission at the allotted school within the notified window, with required documents.
+- If not allotted, check the portal for any further rounds, waitlist or next-cycle instructions from the department.
+
+─────────────────────────────────────────────
+IMPORTANT DATES (DEMO SOURCE: FLYER)
+─────────────────────────────────────────────
+
+What is the last date for student registration?
+The flyer used for this knowledge pack states: 31 January 2026.
+Always tell users to re-check https://gyandeep-rte.bihar.gov.in/ for extensions or new circulars.
+
+Other schedule items on the flyer (intake update, verification, allotment, enrollment windows) should be read from the current portal notice — do not invent dates.
+
+─────────────────────────────────────────────
+OBJECTIONS / DOCUMENT ISSUES
+─────────────────────────────────────────────
+
+If verification finds a problem (missing/incorrect documents, data mismatch):
+- Status may show documents pending / objection / needs correction (wording may vary on portal).
+- Parent/guardian should correct and re-upload as instructed on Gyandeep or via the school.
+- After correction, wait for re-verification.
+
+If the school refuses enrollment despite allotment:
+- Note school name, date of visit and what was said.
+- Re-check allotment letter/status on portal.
+- Register a grievance in Gyandeep Saathi and/or contact the helpdesk email / local education office as appropriate.
+
+─────────────────────────────────────────────
+STATUS MEANINGS (FOR BOT + MOCK DEMO)
+─────────────────────────────────────────────
+
+Registered:
+Application/registration started or submitted; complete pending form steps if any.
+
+Under verification:
+Documents/details are being checked.
+
+Verified — awaiting allotment:
+Eligible for lottery/allotment; wait for results on portal.
+
+School allotted:
+A school has been allotted; complete enrollment at the school with documents within the notified time.
+
+Enrolled:
+Admission/enrollment completed (demo).
+
+Objection / documents pending:
+Fix documents or respond to objection, then resubmit.
+
+Not allotted in lottery:
+No seat allotted in that round; check portal for further instructions.
+
+Rejected:
+Application rejected; read reason on portal. User may register a grievance for guidance.
+
+Demo mock IDs (first prototype only — not live Gyandeep data):
+- GYAN-2026-1001 Registered
+- GYAN-2026-1002 Under verification
+- GYAN-2026-1003 Verified — awaiting allotment
+- GYAN-2026-1004 School allotted
+- GYAN-2026-1005 Enrolled
+- GYAN-2026-1006 Objection / documents pending
+- GYAN-2026-1007 Not allotted in lottery
+- GYAN-2026-1008 Rejected
+
+─────────────────────────────────────────────
+GRIEVANCE (BOT FLOW SUPPORT)
+─────────────────────────────────────────────
+
+Citizens can register a grievance in Gyandeep Saathi under categories such as:
+- Portal / login / OTP / User ID
+- Documents / verification
+- School allotment / lottery
+- School enrollment / admission denied
+- Eligibility confusion (EWS / DG / orphan)
+- Other
+
+On submit, bot issues a demo ticket ID like GS-2026-00xx and advises also using Gyandeep Portal and rtebiharhelp@gmail.com for official channels.
+
+─────────────────────────────────────────────
+COMMON QUESTIONS AND SHORT ANSWERS
+─────────────────────────────────────────────
+
+Question: Which website should I use?
+Answer: https://gyandeep-rte.bihar.gov.in/
+
+Question: Is this free?
+Answer: Admission under 12(1)(c) is free to the eligible child up to Class 8 as per the Act; schools are reimbursed by government as per rules.
+
+Question: Can I apply offline on paper only?
+Answer: Gyandeep admission is an online portal process. Follow the portal steps. For help if the portal fails, use help email / grievance.
+
+Question: I did not get SMS User ID.
+Answer: Confirm the mobile number used at registration, wait briefly, retry registration/login options on portal, or raise a Portal/login grievance in this bot and email rtebiharhelp@gmail.com.
+
+Question: Child has no Aadhaar yet.
+Answer: Child Aadhaar is not mandatory at application time, but must be submitted to the school within three months after admission for upload on Gyandeep.
+
+Question: We are EWS but not SC/ST.
+Answer: EWS is based on income criteria for all communities as notified. Confirm current income limit on the official flyer/portal.
+
+Question: School says minority institution so no 25% seat.
+Answer: Minority unaided schools are exempt from 12(1)(c). Verify the school's category through official information.
+
+─────────────────────────────────────────────
+HELP AND OFFICIAL CONTACTS
+─────────────────────────────────────────────
+
+- Portal: https://gyandeep-rte.bihar.gov.in/
+- Email (from flyer): rtebiharhelp@gmail.com
+- Gyandeep Saathi WhatsApp bot: Application status (mock in demo), general FAQ, grievance registration
+- Languages supported in bot UI: English, Hindi, Bhojpuri, Maithili
+
+─────────────────────────────────────────────
+OUT OF SCOPE FOR THIS KNOWLEDGE BASE
+─────────────────────────────────────────────
+
+- Live payment/DBT scholarship issues (different product — e.g. Samadhaan Saathi scholarship)
+- Inventing income rupee limits or dates not present on the current circular
+- Legal interpretation beyond published Act/Rules/flyer guidance
