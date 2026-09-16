@@ -175,7 +175,7 @@ def _build_injection(route: dict[str, Any], status_data: dict[str, Any] | None) 
     )
 
 
-def generate_reply(user_text: str, route: dict[str, Any]) -> str:
+def generate_reply(user_text: str, route: dict[str, Any], language: str | None = None) -> str:
     system_path = _first_existing(SYSTEM_PROMPT_CANDIDATES)
     system_prompt = _read_text(system_path)
     if not system_prompt:
@@ -210,7 +210,21 @@ def generate_reply(user_text: str, route: dict[str, Any]) -> str:
         )
 
     injection = _build_injection(route, status_data)
-    full_system = system_prompt.strip() + "\n\n" + injection
+    lang = (language or "").strip().lower()
+    lang_rule = ""
+    if lang == "en":
+        lang_rule = (
+            "\nSessionLanguage: en\n"
+            "Reply in English for this turn (standing session language).\n"
+        )
+    elif lang in ("bho", "mai", "hi"):
+        label = {"hi": "Hindi (Devanagari)", "bho": "Bhojpuri", "mai": "Maithili"}[lang]
+        lang_rule = (
+            f"\nSessionLanguage: {lang}\n"
+            f"Reply in {label} for this turn (standing session language). "
+            "Do not switch to another language unless the user asks.\n"
+        )
+    full_system = system_prompt.strip() + "\n\n" + injection + lang_rule
 
     user_block = (
         f"User message:\n{user_text}\n\n"

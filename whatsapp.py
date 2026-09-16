@@ -135,9 +135,20 @@ def send_list_message(
 
 
 def send_guided_reply(to_wa_id: str, reply: dict[str, Any] | str) -> bool:
-    """Dispatch text / buttons / list from a guided handler payload."""
+    """Dispatch text / buttons / list from a guided handler payload.
+
+    Supports multi-card payloads: {"replies": [payload, ...]} (Feedback 4.0).
+    """
     if isinstance(reply, str):
         return send_text(to_wa_id, reply)
+    # Separate guided cards (e.g. eligible result + next-action question)
+    replies = reply.get("replies")
+    if isinstance(replies, list) and replies:
+        ok = True
+        for card in replies:
+            if not send_guided_reply(to_wa_id, card):
+                ok = False
+        return ok
     text = str(reply.get("text") or "")
     buttons = reply.get("buttons")
     sections = reply.get("list_sections")
