@@ -34,6 +34,18 @@ MENU_LANG = "भाषा बदलें"
 MENU_ELIG = "बच्चा फॉर्म भर सकता है?"  # 23
 MENU_OTHERS = "अन्य (अपना सवाल)"  # 16
 
+# English menu row titles (WA limits)
+MENU_ELIG_EN = "Can child apply?"
+MENU_APPLY_EN = "How to apply?"
+MENU_STATUS_EN = "Application status"
+MENU_SCHOOLS_EN = "How to choose school?"
+MENU_DOCS_EN = "Documents help"
+MENU_GRIEVANCE_EN = "Grievance"
+MENU_OTHERS_EN = "Other (ask question)"
+MENU_LANG_EN = "Change language"
+MENU_MAIN_EN = "Main menu"
+WRITE_OWN_EN = "Write your question"
+
 BTN_LANG_HI = "हिन्दी"
 BTN_LANG_EN = "English"
 BTN_LANG_BHO = "भोजपुरी"
@@ -133,52 +145,76 @@ def language_prompt() -> dict[str, Any]:
     )
 
 
+def _menu_rows(language: str | None) -> list[dict[str, str]]:
+    if language == "en":
+        return [
+            _row("menu_elig", MENU_ELIG_EN, "Eligibility check"),
+            _row("menu_apply", MENU_APPLY_EN),
+            _row("menu_status", MENU_STATUS_EN),
+            _row("menu_schools", MENU_SCHOOLS_EN),
+            _row("menu_docs", MENU_DOCS_EN),
+            _row("menu_grievance", MENU_GRIEVANCE_EN),
+            _row("menu_others", MENU_OTHERS_EN, "Write your own question"),
+            _row("menu_lang", MENU_LANG_EN),
+        ]
+    # HI / BHO / MAI: Hindi titles (reasonable shared UI)
+    return [
+        _row("menu_elig", MENU_ELIG, MENU_ELIG_FULL),
+        _row("menu_apply", MENU_APPLY),
+        _row("menu_status", MENU_STATUS),
+        _row("menu_schools", MENU_SCHOOLS),
+        _row("menu_docs", MENU_DOCS),
+        _row("menu_grievance", MENU_GRIEVANCE),
+        _row("menu_others", MENU_OTHERS, MENU_OTHERS_FULL),
+        _row("menu_lang", MENU_LANG),
+    ]
+
+
 def main_menu(language: str | None = None) -> dict[str, Any]:
     if language == "en":
         text = "Hello. I am Gyandeep Saathi.\nWhat do you want to do?"
+        label = "Open menu"
+        section_title = "Menu"
     else:
         text = "नमस्कार। मैं ज्ञानदीप साथी हूँ।\nआप क्या करना चाहते हैं?"
+        label = "मेनू खोलें"
+        section_title = "मेनू"
     return _list_reply(
         text,
-        [
-            {
-                "title": "मेनू",
-                "rows": [
-                    _row("menu_elig", MENU_ELIG, MENU_ELIG_FULL),
-                    _row("menu_apply", MENU_APPLY),
-                    _row("menu_status", MENU_STATUS),
-                    _row("menu_schools", MENU_SCHOOLS),
-                    _row("menu_docs", MENU_DOCS),
-                    _row("menu_grievance", MENU_GRIEVANCE),
-                    _row("menu_others", MENU_OTHERS, MENU_OTHERS_FULL),
-                    _row("menu_lang", MENU_LANG),
-                ],
-            }
-        ],
-        "मेनू खोलें",
+        [{"title": section_title, "rows": _menu_rows(language)}],
+        label,
     )
 
 
-def topic_chooser() -> dict[str, Any]:
+def topic_chooser(language: str | None = None) -> dict[str, Any]:
     """General enquiry / samanya jankari: topic buttons, never FAQ wall."""
-    return _list_reply(
-        "आप अपना सवाल लिख सकते हैं।\nया नीचे से विषय चुनें:",
-        [
-            {
-                "title": "विषय",
-                "rows": [
-                    _row("menu_elig", MENU_ELIG, MENU_ELIG_FULL),
-                    _row("menu_apply", MENU_APPLY),
-                    _row("menu_status", MENU_STATUS),
-                    _row("menu_schools", MENU_SCHOOLS),
-                    _row("menu_docs", MENU_DOCS),
-                    _row("menu_grievance", MENU_GRIEVANCE),
-                    _row("menu_write", WRITE_OWN),
-                ],
-            }
-        ],
-        "विषय चुनें",
-    )
+    if language == "en":
+        text = "You can type your question.\nOr pick a topic below:"
+        label = "Pick a topic"
+        section_title = "Topics"
+        rows = [
+            _row("menu_elig", MENU_ELIG_EN, "Eligibility check"),
+            _row("menu_apply", MENU_APPLY_EN),
+            _row("menu_status", MENU_STATUS_EN),
+            _row("menu_schools", MENU_SCHOOLS_EN),
+            _row("menu_docs", MENU_DOCS_EN),
+            _row("menu_grievance", MENU_GRIEVANCE_EN),
+            _row("menu_write", WRITE_OWN_EN),
+        ]
+    else:
+        text = "आप अपना सवाल लिख सकते हैं।\nया नीचे से विषय चुनें:"
+        label = "विषय चुनें"
+        section_title = "विषय"
+        rows = [
+            _row("menu_elig", MENU_ELIG, MENU_ELIG_FULL),
+            _row("menu_apply", MENU_APPLY),
+            _row("menu_status", MENU_STATUS),
+            _row("menu_schools", MENU_SCHOOLS),
+            _row("menu_docs", MENU_DOCS),
+            _row("menu_grievance", MENU_GRIEVANCE),
+            _row("menu_write", WRITE_OWN),
+        ]
+    return _list_reply(text, [{"title": section_title, "rows": rows}], label)
 
 
 def eligibility_gate() -> dict[str, Any]:
@@ -415,9 +451,21 @@ def grievance_ticket(category_label: str, ticket_id: str | None = None) -> dict[
 
 
 def status_ask_id() -> dict[str, Any]:
+    # No buttons after ask-for-id (live WA feedback)
     return _reply(
         "कृपया अपना आवेदन संख्या भेजें (उदाहरण: GYAN-2026-1001)।",
-        [_btn("menu_main", MENU_MAIN), _btn("menu_grievance", MENU_GRIEVANCE)],
+    )
+
+
+def status_card_with_buttons(card_text: str) -> dict[str, Any]:
+    """After status card, show short follow-up actions."""
+    return _reply(
+        card_text,
+        [
+            _btn("menu_main", MENU_MAIN),
+            _btn("menu_grievance", MENU_GRIEVANCE),
+            _btn("menu_apply", "आवेदन कैसे करें"),
+        ],
     )
 
 
@@ -428,6 +476,29 @@ def others_free_prompt() -> dict[str, Any]:
     )
 
 
+def short_help_reply(language: str | None = None) -> dict[str, Any]:
+    """Non-greeting help when free-text LLM returns menu-like fallback."""
+    if language == "en":
+        return _reply(
+            "Please pick a topic from the menu, or type a short question.\n"
+            f"Portal: {PORTAL}",
+            [
+                _btn("menu_main", MENU_MAIN_EN[:20]),
+                _btn("menu_grievance", MENU_GRIEVANCE_EN),
+                _btn("menu_status", MENU_STATUS_EN[:20]),
+            ],
+        )
+    return _reply(
+        "कृपया मेनू से विषय चुनें, या छोटा सवाल लिखें।\n"
+        f"पोर्टल: {PORTAL}",
+        [
+            _btn("menu_main", MENU_MAIN),
+            _btn("menu_grievance", MENU_GRIEVANCE),
+            _btn("menu_status", MENU_STATUS),
+        ],
+    )
+
+
 _NORM_SPACE = re.compile(r"\s+")
 
 
@@ -435,10 +506,58 @@ def _norm(s: str) -> str:
     return _NORM_SPACE.sub(" ", (s or "").strip().lower())
 
 
+_LANG_NAME_TO_CODE = {
+    "english": "en",
+    "eng": "en",
+    "hindi": "hi",
+    "hin": "hi",
+    "bhojpuri": "bho",
+    "maithili": "mai",
+    "हिन्दी": "hi",
+    "हिंदी": "hi",
+    "भोजपुरी": "bho",
+    "मैथिली": "mai",
+    "अंग्रेज़ी": "en",
+    "अंग्रेजी": "en",
+}
+
+_SWITCH_LANG_RE = re.compile(
+    r"""
+    (?:
+        switch\s+to
+        | reply\s+in
+        | give\s+(?:the\s+)?reply\s+in
+        | change\s+(?:to\s+)?(?:language\s+to\s+)?
+        | language\s*[:=]\s*
+    )\s*
+    (english|eng|hindi|hin|bhojpuri|maithili|हिन्दी|हिंदी|भोजपुरी|मैथिली|अंग्रेज़ी|अंग्रेजी)
+    |
+    (english|hindi|bhojpuri|maithili)\s+mein
+    """,
+    re.IGNORECASE | re.VERBOSE,
+)
+
+
 def match_language(text: str, bid: str | None = None) -> str | None:
     if bid in ("lang_hi", "lang_en", "lang_bho", "lang_mai"):
         return bid.replace("lang_", "")
     t = _norm(text)
+    if not t:
+        return None
+
+    m = _SWITCH_LANG_RE.search(t)
+    if m:
+        raw = (m.group(1) or m.group(2) or "").strip().lower()
+        # Devanagari keys stay as-is in mapping
+        code = _LANG_NAME_TO_CODE.get(raw) or _LANG_NAME_TO_CODE.get(raw.title())
+        if not code:
+            for k, v in _LANG_NAME_TO_CODE.items():
+                if _norm(k) == raw:
+                    code = v
+                    break
+        if code:
+            return code
+
     mapping = [
         (("hi",), ["हिन्दी", "हिंदी", "hindi", "hin"]),
         (("en",), ["english", "eng", "अंग्रेज़ी", "अंग्रेजी"]),
@@ -458,12 +577,26 @@ def match_menu(text: str, bid: str | None = None) -> str | None:
     if bid == "elig_retry":
         return "elig_retry"
     t = _norm(text)
+    if not t:
+        return None
+
+    # Exact-only for schools: avoid "स्कूल सूची खोलो" / "स्कूल" matching menu_schools
+    if t == _norm(MENU_SCHOOLS) or t == _norm("स्कूल कैसे चुनें"):
+        return "menu_schools"
+    if t == _norm(MENU_SCHOOLS_EN) or t == _norm("how to choose school"):
+        return "menu_schools"
+
+    # Exact-only short aliases for "अन्य" / "others" so "गलत जानकारी / अन्य..." is NOT menu_others
+    if t == _norm("अन्य") or t == _norm("others"):
+        return "menu_others"
+
     pairs = [
         (
             "menu_elig",
             [
                 MENU_ELIG,
                 MENU_ELIG_FULL,
+                MENU_ELIG_EN,
                 "पात्रता",
                 "eligibility",
                 "eligible",
@@ -472,11 +605,22 @@ def match_menu(text: str, bid: str | None = None) -> str | None:
                 "पात्रता जाँच",
             ],
         ),
-        ("menu_apply", [MENU_APPLY, "आवेदन कैसे", "how to apply", "apply", "आवेदन करें"]),
+        (
+            "menu_apply",
+            [
+                MENU_APPLY,
+                MENU_APPLY_EN,
+                "आवेदन कैसे",
+                "how to apply",
+                "apply",
+                "आवेदन करें",
+            ],
+        ),
         (
             "menu_status",
             [
                 MENU_STATUS,
+                MENU_STATUS_EN,
                 "आवेदन स्थिति",
                 "status",
                 "avedan stithi",
@@ -485,13 +629,19 @@ def match_menu(text: str, bid: str | None = None) -> str | None:
                 "form status",
             ],
         ),
-        ("menu_schools", [MENU_SCHOOLS, SCHOOL_LIST_SHORT, "स्कूल", "school", "स्कूल सूची"]),
-        ("menu_docs", [MENU_DOCS, "कागज़ात", "documents", "document"]),
-        ("menu_grievance", [MENU_GRIEVANCE, "शिकायत", "shikayat", "grievance"]),
-        ("menu_others", [MENU_OTHERS, MENU_OTHERS_FULL, "अन्य", "others"]),
-        ("menu_main", [MENU_MAIN, "main menu", "शुरू से", "home"]),
-        ("menu_lang", [MENU_LANG, "change language", "भाषा"]),
-        ("menu_write", [WRITE_OWN, "अपना सवाल"]),
+        # menu_schools handled above (exact only)
+        ("menu_docs", [MENU_DOCS, MENU_DOCS_EN, "कागज़ात", "documents", "document"]),
+        (
+            "menu_grievance",
+            [MENU_GRIEVANCE, MENU_GRIEVANCE_EN, "शिकायत", "shikayat", "grievance"],
+        ),
+        (
+            "menu_others",
+            [MENU_OTHERS, MENU_OTHERS_FULL, MENU_OTHERS_EN],
+        ),
+        ("menu_main", [MENU_MAIN, MENU_MAIN_EN, "main menu", "शुरू से", "home"]),
+        ("menu_lang", [MENU_LANG, MENU_LANG_EN, "change language", "भाषा बदलें"]),
+        ("menu_write", [WRITE_OWN, WRITE_OWN_EN, WRITE_OWN_LONG, "अपना सवाल"]),
         ("elig_retry", [RETRY_ELIG, "दोबारा"]),
     ]
     for mid, words in pairs:
@@ -550,6 +700,145 @@ def match_grievance(text: str, bid: str | None = None) -> str | None:
     for rid, title, full in GRIEVANCE_ROWS:
         if t == _norm(title) or t == _norm(full):
             return rid
-        if _norm(title) in t or _norm(full) in t:
+        # Prefer longer titles; avoid bare "अन्य" alone matching gr_other via short fragment
+        tn = _norm(title)
+        fn = _norm(full)
+        if len(tn) >= 6 and (tn in t or fn in t):
             return rid
+    return None
+
+
+_GRIEVANCE_LIKE_RE = re.compile(
+    r"""
+    \b(
+        otp
+        | login
+        | log\s*in
+        | user\s*id
+        | userid
+        | sms
+        | password
+        | portal\s*(problem|issue|error|not\s*working)?
+        | did\s+not\s+receive
+        | didn't\s+receive
+        | not\s+received
+        | cannot\s+login
+        | can't\s+login
+        | unable\s+to\s+(login|log\s*in)
+    )\b
+    | ओटीपी
+    | लॉगिन
+    | लॉग\s*इन
+    | एसएमएस
+    | यूज़र\s*आईडी
+    | यूजर\s*आईडी
+    """,
+    re.IGNORECASE | re.VERBOSE,
+)
+
+
+def is_grievance_like(text: str) -> bool:
+    return bool(_GRIEVANCE_LIKE_RE.search(text or ""))
+
+
+# Director-demo deterministic short answers (no FAQ walls)
+_DEMO_LIVE_COUNTS_RE = re.compile(
+    r"""
+    \b(
+        total\s+(seats?|schools?|applications?|admissions?)
+        | how\s+many\s+(seats?|schools?|applications?|admissions?)
+        | (seats?|schools?|applications?|admissions?)\s+(by\s+)?district
+        | district[- ]wise\s+(seats?|schools?|applications?|admissions?)
+        | live\s+(count|data|numbers?)
+    )\b
+    | कुल\s+(सीट|स्कूल|आवेदन|प्रवेश)
+    | जिले\s*(वार|के)\s*(सीट|स्कूल|आवेदन)
+    | कितने\s+(स्कूल|सीट|आवेदन)
+    """,
+    re.IGNORECASE | re.VERBOSE,
+)
+
+_DEMO_PATTERNS: list[tuple[re.Pattern[str], str]] = [
+    (
+        re.compile(
+            r"\b(rte\s*12\s*\(?\s*1\s*\)?\s*\(?\s*c\)?|section\s*12|12\s*\(1\)\s*\(c\))\b"
+            r"|आरटीई\s*12|धारा\s*12",
+            re.I,
+        ),
+        "RTE 12(1)(c) private schools में कमजोर/वंचित वर्ग के बच्चों के लिए 25% सीट आरक्षण है।\n"
+        f"विवरण: {PORTAL_FAQ}",
+    ),
+    (
+        re.compile(
+            r"\b(benefits?|what\s+are\s+the\s+benefits|facility|facilities)\b"
+            r"|लाभ|सुविधा",
+            re.I,
+        ),
+        "मुख्य लाभ: निजी स्कूल में निःशुल्क शिक्षा (निर्धारित कक्षा तक), किताब/यूनिफॉर्म आदि नियम अनुसार।\n"
+        f"पोर्टल FAQ: {PORTAL_FAQ}",
+    ),
+    (
+        re.compile(
+            r"\b(documents?|document\s+list|what\s+documents|papers?\s+required)\b"
+            r"|कागज़ात|दस्तावेज|दस्तावेज़",
+            re.I,
+        ),
+        "आमतौर पर: जन्म प्रमाण, आय/जाति जहाँ लागू, निवास, अभिभावक आधार, फोटो + मोबाइल।\n"
+        f"पूरी सूची: {PORTAL_FAQ}",
+    ),
+    (
+        re.compile(
+            r"\b(deadline|last\s+date|closing\s+date|when\s+to\s+apply|application\s+period)\b"
+            r"|अंतिम\s*तिथि|आखिरी\s*तारीख|कब\s*तक\s*आवेदन",
+            re.I,
+        ),
+        "आवेदन की अंतिम तिथि पोर्टल पर अधिसूचना में देखें — बॉट में live date नहीं है।\n"
+        f"{PORTAL}",
+    ),
+    (
+        re.compile(
+            r"\b(nodal\s+(department|officer|agency)|which\s+department|implementing\s+agency)\b"
+            r"|नोडल\s*(विभाग|अधिकारी)|कौन\s*विभाग",
+            re.I,
+        ),
+        "ज्ञानदीप / RTE बिहार शिक्षा विभाग के अंतर्गत संचालित है।\n"
+        f"आधिकारिक जानकारी: {PORTAL_FAQ}",
+    ),
+    (
+        re.compile(
+            r"\b(admission\s+notification|notification|admit\s+notice|admission\s+notice)\b"
+            r"|प्रवेश\s*अधिसूचना|अधिसूचना",
+            re.I,
+        ),
+        "प्रवेश/आवेदन अधिसूचना पोर्टल पर प्रकाशित होती है।\n"
+        f"देखें: {PORTAL}",
+    ),
+]
+
+
+def try_demo_answer(text: str) -> dict[str, Any] | None:
+    """Short deterministic answers for director-demo free-text queries."""
+    t = text or ""
+    if not t.strip():
+        return None
+    if _DEMO_LIVE_COUNTS_RE.search(t):
+        return _reply(
+            "लाइव सीट/स्कूल/आवेदन संख्या अभी बॉट नहीं दे सकता।\n"
+            f"स्कूल सूची: {PORTAL_SCHOOLS}\n"
+            f"पोर्टल: {PORTAL}",
+            [
+                _btn("school_list", SCHOOL_LIST),
+                _btn("menu_main", MENU_MAIN),
+            ],
+        )
+    for pat, ans in _DEMO_PATTERNS:
+        if pat.search(t):
+            return _reply(
+                ans,
+                [
+                    _btn("menu_main", MENU_MAIN),
+                    _btn("menu_apply", "आवेदन कैसे करें"),
+                    _btn("menu_docs", MENU_DOCS),
+                ],
+            )
     return None

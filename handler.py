@@ -5,7 +5,7 @@ from __future__ import annotations
 import re
 from typing import Any
 
-from answerer import generate_reply
+from answerer import FALLBACK_HI, _looks_like_menu, format_status_card, generate_reply, lookup_status
 from guided import (
     AGE_NO,
     AGE_UNSURE,
@@ -50,6 +50,7 @@ from guided import (
     grievance_label_for_id,
     grievance_menu,
     grievance_ticket,
+    is_grievance_like,
     language_prompt,
     main_menu,
     match_grievance,
@@ -60,8 +61,11 @@ from guided import (
     schools_distance,
     schools_list,
     schools_start,
+    short_help_reply,
     status_ask_id,
+    status_card_with_buttons,
     topic_chooser,
+    try_demo_answer,
 )
 from router import GENERAL_INFO_RE, GYAN_ID_RE, route_intent
 from session import (
@@ -123,15 +127,15 @@ def _start_flow(wa_id: str | None, menu_id: str) -> dict[str, Any]:
         return grievance_menu()
     if menu_id in ("menu_others", "menu_write"):
         set_fields(wa_id, flow="others", last_topic="others")
-        return topic_chooser() if menu_id == "menu_others" else others_free_prompt()
+        lang = get_session(wa_id).get("language")
+        return topic_chooser(lang) if menu_id == "menu_others" else others_free_prompt()
     if menu_id == "menu_lang":
         set_fields(wa_id, flow="language")
         return language_prompt()
     if menu_id == "menu_main":
         clear_flow(wa_id, keep_language=True)
         set_fields(wa_id, flow="main")
-        sess = get_session(wa_id)
-        return main_menu(sess.get("language"))
+        return main_menu(get_session(wa_id).get("language"))
     return main_menu(get_session(wa_id).get("language"))
 
 
@@ -229,7 +233,7 @@ def _handle_apply(wa_id: str | None, text: str, bid: str | None) -> dict[str, An
 
 def _handle_schools(wa_id: str | None, text: str, bid: str | None) -> dict[str, Any] | None:
     t = _norm(text)
-    if bid == "school_list" or t == _norm(SCHOOL_LIST) or "स्कूल सूची" in text:
+    if bid == "school_list" or t == _norm(SCHOOL_LIST) or t == _norm("open school list"):
         set_fields(wa_id, schools_step=1)
         return schools_list()
     if bid == "school_dist" or t == _norm(SCHOOL_DIST) or "दूरी" in text:
@@ -269,89 +273,53 @@ def _handle_grievance(wa_id: str | None, text: str, bid: str | None) -> dict[str
     return grievance_menu()
 
 
-def _llm_fallback(user_text: str) -> dict[str, Any]:
+def _wrap_status_or_text(user_text: str, route: dict[str, Any], raw: str) -> dict[str, Any]:
+    app_id = route.get("application_id")
+    is_status = route.get("intent") == "STATUS" or route.get("domain") == "Status"
+    if app_id:
+        status = lookup_status(str(app_id))
+        if status:
+            return status_card_with_buttons(format_status_card(status))
+        return status_card_with_buttons(raw)
+    if is_status and not app_id:
+        return {"text": raw}
+    return {"text": raw}
+
+
+def _llm_fallback(user_text: str, wa_id: str | None = None) -> dict[str, Any]:
     route = route_intent(user_text)
     print(f"Router result: {route}", flush=True)
-    return _as_dict(generate_reply(user_text, route))
+    raw = generate_reply(user_text, route)
+    if not isinstance(raw, str):
+        return _as_dict(raw)
 
+    app_id = route.get("application_id")
+    is_status = route.get("intent") == "STATUS" or route.get("domain") == "Status"
+    if app_id or (is_status and "आवेदक का नाम" in raw):
+        return _wrap_status_or_text(user_text, route, raw)
 
-def handle_message(
-    user_text: str,
-    wa_id: str | None = None,
-    button_id: str | None = None,
-) -> dict[str, Any]:
-    """Return {text, buttons?, list_sections?, list_button_label?}."""
-    text = (user_text or "").strip()
-    bid = (button_id or "").strip() or None
-
-    if not text and not bid:
-        return _as_dict(
-            "नमस्कार। कृपया अपना प्रश्न लिखें। स्थिति, जानकारी, या शिकायत।"
-        )
-
-    # Prefer interactive id as selection signal when title also present
-    effective_text = text
-    if bid and not text:
-        effective_text = bid
-
-    sess = get_session(wa_id)
-    lowered = _norm(effective_text)
-
-    # GYAN application id: always preserve deterministic status card path
-    gyan = GYAN_ID_RE.search(text or "")
-    if gyan:
-        set_fields(wa_id, awaiting_status_id=False, flow=None, last_topic="status")
-        return _llm_fallback(text)
-
-    # Language selection (first-time or change)
-    lang = match_language(effective_text, bid)
-    if lang:
-        prev = sess.get("language")
-        set_fields(wa_id, language=lang)
-        # First pick / language flow -> main menu; mid-chat switch stays on topic
-        if prev is None or sess.get("flow") in (None, "language"):
-            set_fields(wa_id, flow="main")
-            return main_menu(lang)
-        names = {"hi": "हिन्दी", "en": "English", "bho": "भोजपुरी", "mai": "मैथिली"}
-        return {"text": f"ठीक है। अब जवाब {names.get(lang, lang)} में होंगे।"}
-
-    # Cold greeting / restart -> language if unset, else main menu
-    if lowered in _GREETINGS or bid in ("menu_main",):
-        if bid == "menu_main" or lowered in {"menu", "मेनू", "start"}:
+    if raw.strip() == FALLBACK_HI.strip() or _looks_like_menu(raw):
+        lang = get_session(wa_id).get("language") if wa_id is not None else None
+        if is_grievance_like(user_text):
             clear_flow(wa_id, keep_language=True)
-            set_fields(wa_id, flow="main")
-            return main_menu(sess.get("language"))
-        if not sess.get("language"):
-            set_fields(wa_id, flow="language")
-            return language_prompt()
-        clear_flow(wa_id, keep_language=True)
-        set_fields(wa_id, flow="main")
-        return main_menu(sess.get("language"))
+            return grievance_ticket("स्वयं लिखा")
+        demo = try_demo_answer(user_text)
+        if demo:
+            return demo
+        return short_help_reply(lang)
 
-    # Global menu shortcuts (button id or title)
-    menu_id = match_menu(effective_text, bid)
-    if menu_id in (
-        "menu_elig",
-        "menu_apply",
-        "menu_status",
-        "menu_schools",
-        "menu_docs",
-        "menu_grievance",
-        "menu_others",
-        "menu_write",
-        "menu_lang",
-        "menu_main",
-        "elig_retry",
-    ):
-        return _start_flow(wa_id, menu_id)
+    return {"text": raw}
 
-    # General enquiry synonyms -> topic chooser (never FAQ wall)
-    if GENERAL_INFO_RE.search(text or effective_text):
-        set_fields(wa_id, flow="others", last_topic="others")
-        return topic_chooser()
 
-    # Continue active guided flow
+def _handle_active_flow(
+    wa_id: str | None,
+    effective_text: str,
+    bid: str | None,
+    text: str,
+) -> dict[str, Any] | None:
+    sess = get_session(wa_id)
     flow = sess.get("flow")
+
     if flow == "language":
         set_fields(wa_id, flow="language")
         return language_prompt()
@@ -382,23 +350,135 @@ def handle_message(
             return out
 
     if flow == "status" or sess.get("awaiting_status_id"):
-        # No GYAN id in this turn: keep asking
         return status_ask_id()
 
     if flow == "others":
-        # Free text while in others: try menu match already done; else topic chooser again
-        # or short LLM if it looks like a real question
+        # Defer clear menu titles/ids to global match_menu
+        mid = match_menu(effective_text, bid)
+        if mid:
+            return None
+        if is_grievance_like(effective_text):
+            clear_flow(wa_id, keep_language=True)
+            return grievance_ticket("स्वयं लिखा")
+        demo = try_demo_answer(effective_text)
+        if demo:
+            return demo
         if len(effective_text.split()) >= 4:
-            return _llm_fallback(text)
-        return topic_chooser()
+            return _llm_fallback(text, wa_id)
+        return topic_chooser(sess.get("language"))
 
-    if flow == "main":
-        return main_menu(sess.get("language"))
+    return None
 
-    # No language yet and not greeting: still ask language first
-    if not sess.get("language"):
+
+def handle_message(
+    user_text: str,
+    wa_id: str | None = None,
+    button_id: str | None = None,
+) -> dict[str, Any]:
+    """Return {text, buttons?, list_sections?, list_button_label?}."""
+    text = (user_text or "").strip()
+    bid = (button_id or "").strip() or None
+
+    if not text and not bid:
+        return _as_dict(
+            "नमस्कार। कृपया अपना प्रश्न लिखें। स्थिति, जानकारी, या शिकायत।"
+        )
+
+    effective_text = text
+    if bid and not text:
+        effective_text = bid
+
+    sess = get_session(wa_id)
+    lowered = _norm(effective_text)
+
+    # GYAN application id -> status card + follow-up buttons
+    gyan = GYAN_ID_RE.search(text or "")
+    if gyan:
+        set_fields(wa_id, awaiting_status_id=False, flow=None, last_topic="status")
+        route = route_intent(text)
+        raw = generate_reply(text, route)
+        return _wrap_status_or_text(text, route, raw if isinstance(raw, str) else str(raw))
+
+    # Language selection / switch — always return main_menu(new_lang)
+    lang = match_language(effective_text, bid)
+    if lang:
+        set_fields(wa_id, language=lang, flow="main")
+        return main_menu(lang)
+
+    # Cold greeting / restart
+    if lowered in _GREETINGS or bid in ("menu_main",):
+        if bid == "menu_main" or lowered in {"menu", "मेनू", "start"}:
+            clear_flow(wa_id, keep_language=True)
+            set_fields(wa_id, flow="main")
+            return main_menu(get_session(wa_id).get("language"))
+        if not sess.get("language"):
+            set_fields(wa_id, flow="language")
+            return language_prompt()
+        clear_flow(wa_id, keep_language=True)
+        set_fields(wa_id, flow="main")
+        return main_menu(get_session(wa_id).get("language"))
+
+    # Explicit menu_* / elig_retry button ids always start that flow
+    # (text-based match_menu still runs AFTER active flow so school_list titles do not loop)
+    if bid and (bid.startswith("menu_") or bid == "elig_retry"):
+        return _start_flow(wa_id, bid)
+
+    flow_snapshot = sess.get("flow")
+    awaiting = bool(sess.get("awaiting_status_id"))
+
+    # ACTIVE FLOW handlers BEFORE global match_menu
+    if (
+        flow_snapshot
+        in (
+            "language",
+            "eligibility",
+            "apply",
+            "schools",
+            "docs",
+            "grievance",
+            "status",
+            "others",
+        )
+        or awaiting
+    ):
+        out = _handle_active_flow(wa_id, effective_text, bid, text)
+        if out is not None:
+            return out
+
+    # Global menu shortcuts (button id or title)
+    menu_id = match_menu(effective_text, bid)
+    if menu_id in (
+        "menu_elig",
+        "menu_apply",
+        "menu_status",
+        "menu_schools",
+        "menu_docs",
+        "menu_grievance",
+        "menu_others",
+        "menu_write",
+        "menu_lang",
+        "menu_main",
+        "elig_retry",
+    ):
+        return _start_flow(wa_id, menu_id)
+
+    if GENERAL_INFO_RE.search(text or effective_text):
+        set_fields(wa_id, flow="others", last_topic="others")
+        return topic_chooser(get_session(wa_id).get("language"))
+
+    demo = try_demo_answer(effective_text)
+    if demo:
+        return demo
+
+    if is_grievance_like(effective_text) and len(effective_text.split()) >= 3:
+        clear_flow(wa_id, keep_language=True)
+        return grievance_ticket("स्वयं लिखा")
+
+    if flow_snapshot == "main":
+        return main_menu(get_session(wa_id).get("language"))
+
+    if not get_session(wa_id).get("language"):
         set_fields(wa_id, flow="language")
         return language_prompt()
 
-    # Fall through to router + answerer (status phrases etc.)
-    return _llm_fallback(text)
+    return _llm_fallback(text, wa_id)
