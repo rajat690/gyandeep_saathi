@@ -1,4 +1,4 @@
-"""Gyandeep Saathi WhatsApp webhook — intent router + FAQ/status answerer."""
+"""Gyandeep Saathi WhatsApp webhook - guided UX + intent router + FAQ/status."""
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ import os
 from flask import Flask, jsonify, request
 
 from handler import handle_message
-from whatsapp import extract_first_text_message, send_text
+from whatsapp import extract_first_text_message, send_guided_reply
 
 app = Flask(__name__)
 VERIFY_TOKEN = os.environ.get("VERIFY_TOKEN", "")
@@ -36,9 +36,13 @@ def receive():
     try:
         msg = extract_first_text_message(payload)
         if msg:
-            print(f"Incoming from {msg['wa_id']}: {msg['text']}", flush=True)
-            reply = handle_message(msg["text"])
-            ok = send_text(msg["wa_id"], reply)
+            print(f"Incoming from {msg['wa_id']}: text={msg.get('text')!r} id={msg.get('id')!r}", flush=True)
+            reply = handle_message(
+                msg.get("text") or "",
+                wa_id=msg["wa_id"],
+                button_id=msg.get("id") or None,
+            )
+            ok = send_guided_reply(msg["wa_id"], reply)
             print(f"Send ok={ok}", flush=True)
     except Exception as exc:
         # Always ack Meta so it does not retry endlessly

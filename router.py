@@ -51,6 +51,27 @@ STATUS_PHRASE_RE = re.compile(
     re.IGNORECASE | re.VERBOSE,
 )
 
+
+# Roman Hindi / English / Devanagari GENERAL enquiry cues (topic chooser, not FAQ wall)
+GENERAL_INFO_RE = re.compile(
+    r"""
+    \b(
+        general\s*(query|enquiry|inquiry|inquire)
+        | samanya\s*jankari
+        | samnya\s*jankari
+        | samanya\s*jaankari
+        | mujhe\s*jankari\s*chahiye
+        | general\s*info(rmation)?
+        | more\s*information
+        | information
+        | jankari
+    )\b
+    | सामान्य\s*जानकारी
+    | और\s*जानकारी
+    """,
+    re.IGNORECASE | re.VERBOSE,
+)
+
 LANGUAGE_SWITCH_RE = re.compile(
     r"""
     \b(
